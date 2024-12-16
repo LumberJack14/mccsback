@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -16,10 +17,15 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
 import org.mccheckers.mccheckers_backend.Config;
 import org.mccheckers.mccheckers_backend.Resources.AuthResource;
+import org.mccheckers.mccheckers_backend.db.BlockDAO;
+import org.mccheckers.mccheckers_backend.model.Block;
+import org.mccheckers.mccheckers_backend.service.AdminService;
+import org.mccheckers.mccheckers_backend.service.UserService;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 
 @Provider
@@ -28,6 +34,9 @@ public class JwtFilter implements ContainerRequestFilter {
 
     private static final String secretString = Config.getJwtSecret();
     SecretKey SECRET_KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
+
+    @Inject
+    private UserService userService;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -55,6 +64,15 @@ public class JwtFilter implements ContainerRequestFilter {
                     .verifyWith(SECRET_KEY)
                     .build()
                     .parseSignedClaims(token);
+
+            int userId = userService.getIdByUsername(jws.getPayload().getSubject());
+            List<Block> blocks = BlockDAO.getBlocksUser(userId);
+            for (Block block: blocks) {
+                if (block.getEndDate().after(new Date())) {
+                    requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
+                            .entity("The user has been blocked with the reason: " + block.getCause()).build());
+                }
+            }
 
             SecurityContext securityContext = new SecurityContext() {
                 @Context

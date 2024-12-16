@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.mccheckers.mccheckers_backend.dto.BlockRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.ModeratorRequestDTO;
 import org.mccheckers.mccheckers_backend.service.AdminService;
 
@@ -76,6 +77,20 @@ public class AdminResource {
             adminService.deactivateUser(userId);
             return Response.ok().build();
         } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(Collections.singletonMap("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/block")
+    @RolesAllowed("ADMIN")
+    public Response blockUser(BlockRequestDTO dto) {
+        try {
+            adminService.blockUser(dto);
+            return Response.ok().build();
+        } catch(Exception e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity(Collections.singletonMap("error", e.getMessage()))
                     .build();

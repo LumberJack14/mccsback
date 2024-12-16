@@ -1,8 +1,10 @@
 package org.mccheckers.mccheckers_backend.service;
 
 import jakarta.enterprise.context.RequestScoped;
+import org.mccheckers.mccheckers_backend.db.BlockDAO;
 import org.mccheckers.mccheckers_backend.db.ModeratorDAO;
 import org.mccheckers.mccheckers_backend.db.UserDAO;
+import org.mccheckers.mccheckers_backend.dto.BlockRequestDTO;
 import org.mccheckers.mccheckers_backend.model.User;
 
 @RequestScoped
@@ -62,5 +64,10 @@ public class AdminService {
         return true;
     }
 
-
+    public boolean blockUser(BlockRequestDTO dto) throws Exception {
+        if (BlockDAO.createBlock(dto.getUserId(), dto.getEndDate(), dto.getCause()) == -1) {
+            throw new Exception("Server error while creating a block for user");
+        }
+        return true;
+    }
 }
