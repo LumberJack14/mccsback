@@ -3,9 +3,14 @@ package org.mccheckers.mccheckers_backend.service;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import org.mccheckers.mccheckers_backend.db.MatchDAO;
+import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.dto.MatchRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.MatchResponseDTO;
+import org.mccheckers.mccheckers_backend.dto.UserRequestDTO;
+import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
 import org.mccheckers.mccheckers_backend.model.Match;
+import org.mccheckers.mccheckers_backend.model.User;
+import org.mccheckers.mccheckers_backend.util.EloCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +38,15 @@ public class MatchService {
 
         if (match == null) {
             throw new Exception("Server error while creating match");
+        }
+
+        UserResponseDTO winner = userService.getUserById(match.getWinnerId());
+        UserResponseDTO loser = userService.getUserById(match.getLoserId());
+
+        if (match.isSuccess()) {
+            int[] newElo = EloCalculator.calculateElo(winner.getElo(), loser.getElo(), 1.0);
+            UserDAO.updateElo(winner.getId(), newElo[0]);
+            UserDAO.updateElo(loser.getId(), newElo[1]);
         }
 
         MatchResponseDTO matchResponseDTO = new MatchResponseDTO(

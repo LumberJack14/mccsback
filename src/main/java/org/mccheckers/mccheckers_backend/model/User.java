@@ -7,6 +7,24 @@ public class User {
     private String passwordHash;
     private boolean active;
 
+    public User() {
+
+    }
+
+    public User(
+            int id,
+            String username,
+            int elo,
+            String passwordHash,
+            boolean active
+    ) {
+        this.id = id;
+        this.username = username;
+        this.elo = elo;
+        this.passwordHash = passwordHash;
+        this.active = active;
+    }
+
     public int getId() {
         return id;
     }

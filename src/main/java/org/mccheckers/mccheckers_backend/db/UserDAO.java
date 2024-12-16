@@ -137,6 +137,52 @@ public class UserDAO {
         return false;
     }
 
+    public static boolean updateElo(int userId, int elo) {
+        String updateSQL = "UPDATE _user SET elo = ? WHERE id = ?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
+
+            preparedStatement.setInt(1, elo);
+            preparedStatement.setInt(2, userId);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Elo of the user successfully updated!");
+                return true;
+            } else {
+                System.out.println("No user found with id " + userId + " to update.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while updating elo for user: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public static String getUserRank(int userId) {
+        String sql = "SELECT get_user_rank(?)";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, userId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String rank = resultSet.getString("name");
+
+                    return rank;
+                } else {
+                    System.out.println("User with id " + userId + " not found.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving user rank: " + e.getMessage());
+        }
+
+        return null;
+
+    }
+
     public static boolean deleteUserById(int userId) {
         String deleteUserSQL = "DELETE FROM _user WHERE id = ?";
 
