@@ -1,5 +1,8 @@
 package org.mccheckers.mccheckers_backend.dto;
 
+import jakarta.inject.Inject;
+import org.mccheckers.mccheckers_backend.service.AdminService;
+
 public class MatchResponseDTO {
     private RequestResponseDTO request;
     private boolean isSuccess;
@@ -10,6 +13,13 @@ public class MatchResponseDTO {
     private String scoreText; // e.g. 2:0
     private String remark;
     private UserResponseDTO moderator;
+    private boolean isFriendlyMatch;
+
+    @Inject
+    private AdminService adminService;
+
+    public MatchResponseDTO() {
+    }
 
     public MatchResponseDTO(
             RequestResponseDTO request,
@@ -31,6 +41,12 @@ public class MatchResponseDTO {
         this.scoreText = scoreText;
         this.remark = remark;
         this.moderator = moderator;
+
+        if (adminService.isModerator(loser.getId()) || adminService.isModerator(winner.getId())) {
+            this.isFriendlyMatch = true;
+        } else {
+            this.isFriendlyMatch = false;
+        }
     }
 
     public int getWinnerScore() {
