@@ -41,7 +41,7 @@ public class MatchService {
         UserResponseDTO winner = userService.getUserById(match.getWinnerId());
         UserResponseDTO loser = userService.getUserById(match.getLoserId());
 
-        if (match.isSuccess()) {
+        if (match.isSuccess() && !winner.isModerator() && !loser.isModerator()) {
             int[] newElo = EloCalculator.calculateElo(winner.getElo(), loser.getElo(), 1.0);
             UserDAO.updateElo(winner.getId(), newElo[0]);
             UserDAO.updateElo(loser.getId(), newElo[1]);
