@@ -46,4 +46,12 @@ public class Config {
         }
         return value;
     }
+
+    public static String getAdminUsername(){
+        return getProperty("admin.username");
+    }
+
+    public static String getAdminPassword() {
+        return getProperty("admin.password");
+    }
 }

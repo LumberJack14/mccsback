@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
 import org.mccheckers.mccheckers_backend.Config;
+import org.mccheckers.mccheckers_backend.Resources.AuthResource;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class JwtFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String path = requestContext.getUriInfo().getPath();
         if (path.equals("/auth/login")) {
-            return; // Skip JWT validation for login
+            return;
         }
 
         String authorizationHeader = requestContext.getHeaderString("Authorization");
@@ -43,6 +44,11 @@ public class JwtFilter implements ContainerRequestFilter {
         }
 
         String token = authorizationHeader.substring("Bearer".length()).trim();
+
+        if (AuthResource.isTokenBlacklisted(token)) {
+            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("Token has been invalidated. Please log in again.").build());
+        }
 
         try {
             Jws<Claims> jws = Jwts.parser()

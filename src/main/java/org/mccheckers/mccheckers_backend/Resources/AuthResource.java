@@ -5,23 +5,42 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.mccheckers.mccheckers_backend.Config;
-import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.service.AdminService;
 import org.mccheckers.mccheckers_backend.service.UserService;
 
 import javax.crypto.SecretKey;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Path("/auth")
 public class AuthResource {
+    private static Set<String> tokenBlacklist = new HashSet<>();
 
-    //TODO logout
+    @POST
+    @Path("/logout")
+    public Response logout(@Context ContainerRequestContext requestContext) {
+        String authHeader = requestContext.getHeaderString("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid Authorization header").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length());
+
+        tokenBlacklist.add(token);
+        System.out.println("Token blacklisted at: " + LocalDateTime.now());
+
+        return Response.ok("Successfully logged out").build();
+    }
+
+    public static boolean isTokenBlacklisted(String token) {
+        return tokenBlacklist.contains(token);
+    }
 
     @Inject
     private UserService userService;
@@ -39,7 +58,7 @@ public class AuthResource {
     public Response login(User user) {
         String username = user.getUsername();
         String password = user.getPassword();
-        if ("admin".equals(username) && "admin".equals(password)) {
+        if (username.equals(Config.getAdminUsername()) && password.equals(Config.getAdminPassword())) {
             String token = Jwts.builder()
                     .subject(user.getUsername())
                     .claim("roles", Arrays.asList("ADMIN", "USER", "MODERATOR")) //todo verify the necessity of MOD role
