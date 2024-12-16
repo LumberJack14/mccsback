@@ -28,7 +28,8 @@ public class MatchService {
                 dto.getLoserId(),
                 dto.getRemark(),
                 dto.getModeratorId(),
-                scoreId);
+                scoreId
+        );
 
         if (match == null) {
             throw new Exception("Server error while creating match");
@@ -114,8 +115,11 @@ public class MatchService {
     // 1: 1:0
     // 2: 2:0
     // 3: 2:1
+    // 4: 0:0
 
     private int getScoreId(int winnerScore, int loserScore) {
+        if (winnerScore == 0) return 4;
+
         if (winnerScore == 2) {
             if (loserScore == 0) return 2;
             else return 3;

@@ -22,31 +22,7 @@ public class RequestService {
 
     public List<RequestResponseDTO> getCurrentRequests() {
         List<Request> requests = RequestDAO.getRequests();
-        List<RequestResponseDTO> requestResponseDTOS = new ArrayList<>();
-
-        for (Request request : requests) {
-            RequestResponseDTO dto = new RequestResponseDTO();
-            dto.setId(request.getId());
-            dto.setDateTime(request.getDateTime());
-            dto.setRoomId(request.getRoomId());
-
-            int moderatorId = request.getModeratorId();
-            if (moderatorId != 0) {
-                UserResponseDTO moderator = userService.getUserById(moderatorId);
-                dto.setModerator(moderator);
-            }
-
-            List<Integer> participantsIds = RequestDAO.getParticipants(request.getId());
-            List<UserResponseDTO> participants = new ArrayList<>();
-            for (Integer id : participantsIds) {
-                participants.add(userService.getUserById(id));
-            }
-            dto.setParticipants(participants);
-
-            requestResponseDTOS.add(dto);
-        }
-
-        return requestResponseDTOS;
+        return requestsToDTOs(requests);
     }
 
     public Request createRequest(RequestRequestDTO dto, int userId) {
@@ -125,5 +101,36 @@ public class RequestService {
         dto.setParticipants(participants);
 
         return dto;
+    }
+
+    public List<RequestResponseDTO> getRequestsUser(int id) {
+        List<Request> requests = RequestDAO.getRequestsUser(id);
+        return requestsToDTOs(requests);
+    }
+
+    private List<RequestResponseDTO> requestsToDTOs(List<Request> requests) {
+        List<RequestResponseDTO> requestResponseDTOS = new ArrayList<>();
+        for (Request request: requests) {
+            RequestResponseDTO dto = new RequestResponseDTO();
+            dto.setId(request.getId());
+            dto.setDateTime(request.getDateTime());
+            dto.setRoomId(request.getRoomId());
+
+            int moderatorId = request.getModeratorId();
+            if (moderatorId != 0) {
+                UserResponseDTO moderator = userService.getUserById(moderatorId);
+                dto.setModerator(moderator);
+            }
+
+            List<Integer> participantsIds = RequestDAO.getParticipants(request.getId());
+            List<UserResponseDTO> participants = new ArrayList<>();
+            for (Integer i : participantsIds) {
+                participants.add(userService.getUserById(i));
+            }
+            dto.setParticipants(participants);
+            requestResponseDTOS.add(dto);
+        }
+
+        return requestResponseDTOS;
     }
 }

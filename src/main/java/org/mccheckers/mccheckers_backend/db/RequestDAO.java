@@ -224,4 +224,23 @@ public class RequestDAO {
 
         return null;
     }
+
+    public static List<Request> getRequestsUser(int userId) {
+        List<Request> requests = new ArrayList<>();
+        String sql = "SELECT * FROM request_user WHERE id_user = ?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int requestId = resultSet.getInt("id_request");
+                requests.add(getById(requestId));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving requests for user: " + e.getMessage());
+        }
+
+        return requests;
+    }
 }

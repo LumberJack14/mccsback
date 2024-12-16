@@ -79,5 +79,13 @@ public class RequestResource {
         }
     }
 
+    @GET
+    @Path("/me")
+    @RolesAllowed("USER")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRequestsUser(@Context SecurityContext securityContext) {
+        String username = securityContext.getUserPrincipal().getName();
+        return Response.ok(requestService.getRequestsUser(userService.getIdByUsername(username))).build();
+    }
 
 }
