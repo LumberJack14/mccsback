@@ -1,11 +1,14 @@
 package org.mccheckers.mccheckers_backend.service;
 
+import jakarta.enterprise.context.RequestScoped;
 import org.mccheckers.mccheckers_backend.db.ReportDAO;
 import org.mccheckers.mccheckers_backend.dto.ReportRequestDTO;
 import org.mccheckers.mccheckers_backend.model.Report;
 
 import java.util.List;
 
+
+@RequestScoped
 public class ReportService {
     public Report createReport(ReportRequestDTO dto) throws Exception {
         Report report = ReportDAO.createReport(dto.getModeratorId(), dto.getReason(), dto.getUserId());
