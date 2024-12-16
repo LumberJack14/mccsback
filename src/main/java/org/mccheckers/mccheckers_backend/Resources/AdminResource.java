@@ -73,7 +73,7 @@ public class AdminResource {
     @RolesAllowed("ADMIN")
     public Response deactivateUser(@PathParam("id") int userId) {
         try {
-            adminService.removeModerator(userId);
+            adminService.deactivateUser(userId);
             return Response.ok().build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.CONFLICT)
