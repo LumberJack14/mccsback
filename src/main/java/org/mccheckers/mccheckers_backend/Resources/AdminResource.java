@@ -42,12 +42,41 @@ public class AdminResource {
     @Path("/moderator/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("ADMIN")
     public Response removeModerator(@PathParam("id") int userId) {
         try {
             adminService.removeModerator(userId);
             return Response.noContent().build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND)
+                    .entity(Collections.singletonMap("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/activate/{id}")
+    @RolesAllowed("ADMIN")
+    public Response activateUser(@PathParam("id") int userId) {
+        try {
+            adminService.activateUser(userId);
+            return Response.ok().build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(Collections.singletonMap("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/deactivate/{id}")
+    @RolesAllowed("ADMIN")
+    public Response deactivateUser(@PathParam("id") int userId) {
+        try {
+            adminService.removeModerator(userId);
+            return Response.ok().build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.CONFLICT)
                     .entity(Collections.singletonMap("error", e.getMessage()))
                     .build();
         }

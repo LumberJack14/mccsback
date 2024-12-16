@@ -1,6 +1,7 @@
 package org.mccheckers.mccheckers_backend.service;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.mccheckers.mccheckers_backend.db.PersonalDataDAO;
 import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.dto.UserRequestDTO;
@@ -15,6 +16,9 @@ import static org.mccheckers.mccheckers_backend.security.BCryptHashing.verifyPas
 
 @RequestScoped
 public class UserService {
+
+    @Inject
+    AdminService adminService;
 
     public int registerUser(UserRequestDTO userDTO) {
         if (isUsernameTaken(userDTO.getUsername())) {
@@ -60,7 +64,8 @@ public class UserService {
                     personalDataInstance.getName(),
                     personalDataInstance.getSurname(),
                     personalDataInstance.getPhoneNumber(),
-                    personalDataInstance.getAvatarLink()
+                    personalDataInstance.getAvatarLink(),
+                    adminService.isModerator(userInstance.getId())
                     );
             return userResponseDTO;
         }
@@ -114,7 +119,8 @@ public class UserService {
                     personalDataToUpdate.getName(),
                     personalDataToUpdate.getSurname(),
                     personalDataToUpdate.getPhoneNumber(),
-                    personalDataToUpdate.getAvatarLink()
+                    personalDataToUpdate.getAvatarLink(),
+                    adminService.isModerator(userToUpdate.getId())
             );
         }
 

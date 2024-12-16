@@ -9,8 +9,9 @@ public class UserResponseDTO {
     private String surname;
     private String phoneNumber;
     private String avatarLink;
+    private boolean isModerator;
 
-    public UserResponseDTO(int id, String username, int elo, boolean active, String name, String surname, String phoneNumber, String avatarLink) {
+    public UserResponseDTO(int id, String username, int elo, boolean active, String name, String surname, String phoneNumber, String avatarLink, boolean isModerator) {
         this.id = id;
         this.username = username;
         this.elo = elo;
@@ -19,6 +20,7 @@ public class UserResponseDTO {
         this.surname = surname;
         this.phoneNumber = phoneNumber;
         this.avatarLink = avatarLink;
+        this.isModerator = isModerator;
     }
 
     public int getId() {
