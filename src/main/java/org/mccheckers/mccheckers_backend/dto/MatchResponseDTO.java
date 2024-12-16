@@ -1,15 +1,15 @@
 package org.mccheckers.mccheckers_backend.dto;
 
 public class MatchResponseDTO {
-    RequestResponseDTO request;
-    boolean isSuccess;
-    UserResponseDTO winner;
-    UserResponseDTO loser;
-    int winnerScore;
-    int loserScore;
-    String scoreText; // e.g. 2:0
-    String remark;
-    UserResponseDTO moderator;
+    private RequestResponseDTO request;
+    private boolean isSuccess;
+    private UserResponseDTO winner;
+    private UserResponseDTO loser;
+    private int winnerScore;
+    private int loserScore;
+    private String scoreText; // e.g. 2:0
+    private String remark;
+    private UserResponseDTO moderator;
 
     public MatchResponseDTO(
             RequestResponseDTO request,

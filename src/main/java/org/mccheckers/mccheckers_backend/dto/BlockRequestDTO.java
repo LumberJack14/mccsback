@@ -3,9 +3,9 @@ package org.mccheckers.mccheckers_backend.dto;
 import java.util.Date;
 
 public class BlockRequestDTO {
-    int userId;
-    Date endDate;
-    String cause;
+    private int userId;
+    private Date endDate;
+    private String cause;
 
     public BlockRequestDTO( int userId, Date endDate, String cause) {
         this.userId = userId;

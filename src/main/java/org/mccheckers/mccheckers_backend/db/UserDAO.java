@@ -1,6 +1,7 @@
 package org.mccheckers.mccheckers_backend.db;
 
 import org.mccheckers.mccheckers_backend.Config;
+import org.mccheckers.mccheckers_backend.dto.UserResponseDTOLeaderboard;
 import org.mccheckers.mccheckers_backend.model.User;
 
 import java.sql.*;
@@ -181,6 +182,33 @@ public class UserDAO {
 
         return null;
 
+    }
+
+    public static List<UserResponseDTOLeaderboard> getLeaderboard(int limit) {
+        String sql = "Select get_top_users_with_details(?)";
+        List<UserResponseDTOLeaderboard> users = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, limit);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    users.add(new UserResponseDTOLeaderboard(
+                                    resultSet.getInt("user_id"),
+                                    resultSet.getString("username"),
+                                    resultSet.getInt("elo"),
+                                    resultSet.getString("rank_name"),
+                                    resultSet.getInt("total_matches")
+                            )
+                    );
+
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving leaderboards: " + e.getMessage());
+        }
+
+        return users;
     }
 
     public static boolean deleteUserById(int userId) {

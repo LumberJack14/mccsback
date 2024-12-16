@@ -6,6 +6,7 @@ import org.mccheckers.mccheckers_backend.db.PersonalDataDAO;
 import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.dto.UserRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
+import org.mccheckers.mccheckers_backend.dto.UserResponseDTOLeaderboard;
 import org.mccheckers.mccheckers_backend.model.PersonalData;
 import org.mccheckers.mccheckers_backend.model.User;
 
@@ -161,6 +162,8 @@ public class UserService {
         return userResponseDTOS;
     }
 
-
+    public List<UserResponseDTOLeaderboard> getLeaderboard(int limit) {
+        return UserDAO.getLeaderboard(limit);
+    }
 }
 

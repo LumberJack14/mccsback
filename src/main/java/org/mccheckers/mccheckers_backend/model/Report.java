@@ -1,10 +1,10 @@
 package org.mccheckers.mccheckers_backend.model;
 
 public class Report {
-    int id;
-    int moderatorId;
-    int userId;
-    String reason;
+    private int id;
+    private int moderatorId;
+    private int userId;
+    private String reason;
 
     public Report(int id, int moderatorId, int userId, String reason) {
         this.id = id;

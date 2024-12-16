@@ -1,9 +1,9 @@
 package org.mccheckers.mccheckers_backend.dto;
 
 public class ReportRequestDTO {
-    int moderatorId;
-    int UserId;
-    String reason;
+    private int moderatorId;
+    private int UserId;
+    private String reason;
 
     public int getModeratorId() {
         return moderatorId;

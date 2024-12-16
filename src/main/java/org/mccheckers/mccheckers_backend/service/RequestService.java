@@ -25,7 +25,10 @@ public class RequestService {
         return requestsToDTOs(requests);
     }
 
-    public Request createRequest(RequestRequestDTO dto, int userId) {
+    public Request createRequest(RequestRequestDTO dto, int userId) throws IllegalArgumentException {
+        if (!userService.getUserById(userId).isActive()) {
+            throw new IllegalArgumentException("Inactive players cannot create new requests!");
+        }
         return RequestDAO.create(dto.getRoomId(), new Timestamp(dto.getDateTime().getTime()), userId);
     }
 

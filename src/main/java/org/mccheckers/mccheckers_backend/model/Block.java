@@ -3,10 +3,10 @@ package org.mccheckers.mccheckers_backend.model;
 import java.util.Date;
 
 public class Block {
-    int id;
-    int userId;
-    Date endDate;
-    String cause;
+    private int id;
+    private int userId;
+    private Date endDate;
+    private String cause;
 
     public Block(int id, int userId, Date endDate, String cause) {
         this.id = id;

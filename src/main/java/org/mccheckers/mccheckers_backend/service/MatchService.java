@@ -6,10 +6,8 @@ import org.mccheckers.mccheckers_backend.db.MatchDAO;
 import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.dto.MatchRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.MatchResponseDTO;
-import org.mccheckers.mccheckers_backend.dto.UserRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
 import org.mccheckers.mccheckers_backend.model.Match;
-import org.mccheckers.mccheckers_backend.model.User;
 import org.mccheckers.mccheckers_backend.util.EloCalculator;
 
 import java.util.ArrayList;

@@ -1,14 +1,14 @@
 package org.mccheckers.mccheckers_backend.model;
 
 public class Match {
-    int id;
-    int requestId;
-    boolean isSuccess;
-    int winnerId;
-    int loserId;
-    int scoreId;
-    String remark;
-    int moderatorId;
+    private int id;
+    private int requestId;
+    private boolean isSuccess;
+    private int winnerId;
+    private int loserId;
+    private int scoreId;
+    private String remark;
+    private int moderatorId;
 
     public Match(
             int id,

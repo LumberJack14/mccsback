@@ -108,4 +108,17 @@ public class UserResource {
     public Response searchUser(@PathParam("str") String str) {
         return Response.ok(userService.findUsersBySubstring(str)).build();
     }
+
+    @GET
+    @Path("/leaderboard")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getLeaderboard(@QueryParam("limit") @DefaultValue("10000") int limit) {
+        if (limit <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Limit must be greater than 0.")
+                    .build();
+        }
+
+        return Response.ok(userService.getLeaderboard(limit)).build();
+    }
 }

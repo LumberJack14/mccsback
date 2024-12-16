@@ -36,12 +36,18 @@ public class RequestResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createRequests(RequestRequestDTO dto, @Context SecurityContext securityContext) {
         String username = securityContext.getUserPrincipal().getName();
-        Request request = requestService.createRequest(dto, userService.getIdByUsername(username));
-        if (request == null) {
-            return Response.status(Response.Status.CONFLICT).entity(Collections.singletonMap("error", "Server error while creating request"))
+        try {
+            Request request = requestService.createRequest(dto, userService.getIdByUsername(username));
+            if (request == null) {
+                return Response.status(Response.Status.CONFLICT).entity(Collections.singletonMap("error", "Server error while creating request"))
+                        .build();
+            }
+            return Response.status(Response.Status.CREATED).entity(request.getId()).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(Collections.singletonMap("error", e.getMessage()))
                     .build();
         }
-        return Response.status(Response.Status.CREATED).entity(request.getId()).build();
     }
 
     @PUT
