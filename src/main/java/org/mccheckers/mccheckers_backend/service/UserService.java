@@ -9,6 +9,8 @@ import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
 import org.mccheckers.mccheckers_backend.model.PersonalData;
 import org.mccheckers.mccheckers_backend.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mccheckers.mccheckers_backend.security.BCryptHashing.hashPassword;
@@ -56,7 +58,7 @@ public class UserService {
         if (user.isPresent() && personalData.isPresent()) {
             User userInstance = user.get();
             PersonalData personalDataInstance = personalData.get();
-            UserResponseDTO userResponseDTO = new UserResponseDTO(
+            return new UserResponseDTO(
                     userInstance.getId(),
                     userInstance.getUsername(),
                     userInstance.getElo(),
@@ -67,7 +69,6 @@ public class UserService {
                     personalDataInstance.getAvatarLink(),
                     adminService.isModerator(userInstance.getId())
                     );
-            return userResponseDTO;
         }
         return null;
     }
@@ -137,6 +138,27 @@ public class UserService {
             System.out.println("User with id " + id + " not found.");
             return false;
         }
+    }
+
+    public List<UserResponseDTO> findUsersBySubstring(String str) {
+        List<User> users = UserDAO.findUsersByUsernameSubstring(str);
+        List<UserResponseDTO> userResponseDTOS = new ArrayList<>();
+        for (User user: users) {
+            PersonalData pd = PersonalDataDAO.getPersonalDataById(user.getId()); //trust that personal data exists since
+            UserResponseDTO dto = new UserResponseDTO(                           //user creation is atomic (kind of)
+                    user.getId(),
+                    user.getUsername(),
+                    user.getElo(),
+                    user.isActive(),
+                    pd.getName(),
+                    pd.getSurname(),
+                    pd.getPhoneNumber(),
+                    pd.getAvatarLink(),
+                    adminService.isModerator(user.getId())
+            );
+            userResponseDTOS.add(dto);
+        }
+        return userResponseDTOS;
     }
 
 

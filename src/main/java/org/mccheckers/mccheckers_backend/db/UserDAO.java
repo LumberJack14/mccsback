@@ -4,6 +4,8 @@ import org.mccheckers.mccheckers_backend.Config;
 import org.mccheckers.mccheckers_backend.model.User;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO {
     private static final String DB_URL = Config.getDbUrl();
@@ -156,5 +158,34 @@ public class UserDAO {
 
         return false;
     }
+
+    public static List<User> findUsersByUsernameSubstring(String substring) {
+        List<User> users = new ArrayList<>();
+        String searchSQL = "SELECT id, username, elo, pass_hash, personal_data_id, active FROM _user WHERE username LIKE ?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(searchSQL)) {
+
+            preparedStatement.setString(1, "%" + substring + "%");
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = new User();
+                    user.setId(resultSet.getInt("id"));
+                    user.setUsername(resultSet.getString("username"));
+                    user.setElo(resultSet.getInt("elo"));
+                    user.setPasswordHash(resultSet.getString("pass_hash"));
+                    user.setActive(resultSet.getBoolean("active"));
+
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while searching for users by username substring: " + e.getMessage());
+        }
+
+        return users;
+    }
+
 
 }

@@ -100,4 +100,12 @@ public class UserResource {
                     .build();
         }
     }
+
+    @GET
+    @Path("/search/{str}")
+    @RolesAllowed("USER")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchUser(@PathParam("str") String str) {
+        return Response.ok(userService.findUsersBySubstring(str)).build();
+    }
 }
