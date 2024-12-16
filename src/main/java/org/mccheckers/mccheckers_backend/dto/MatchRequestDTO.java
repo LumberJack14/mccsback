@@ -5,9 +5,26 @@ public class MatchRequestDTO {
     boolean isSuccess;
     int winnerId;
     int loserId;
-    int scoreId;
+    int winnerScore;
+    int loserScore;
     String remark;
     int moderatorId;
+
+    public int getWinnerScore() {
+        return winnerScore;
+    }
+
+    public void setWinnerScore(int winnerScore) {
+        this.winnerScore = winnerScore;
+    }
+
+    public int getLoserScore() {
+        return loserScore;
+    }
+
+    public void setLoserScore(int loserScore) {
+        this.loserScore = loserScore;
+    }
 
     public int getRequestId() {
         return requestId;
@@ -41,13 +58,6 @@ public class MatchRequestDTO {
         this.loserId = loserId;
     }
 
-    public int getScoreId() {
-        return scoreId;
-    }
-
-    public void setScoreId(int scoreId) {
-        this.scoreId = scoreId;
-    }
 
     public String getRemark() {
         return remark;

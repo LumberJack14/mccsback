@@ -10,6 +10,26 @@ public class Match {
     String remark;
     int moderatorId;
 
+    public Match(
+            int id,
+            int requestId,
+            boolean isSuccess,
+            int winnerId,
+            int loserId,
+            int scoreId,
+            String remark,
+            int moderatorId
+    ) {
+        this.id = id;
+        this.requestId = requestId;
+        this.isSuccess = isSuccess;
+        this.winnerId = winnerId;
+        this.loserId = loserId;
+        this.scoreId = scoreId;
+        this.remark = remark;
+        this.moderatorId = moderatorId;
+    }
+
     public int getId() {
         return id;
     }

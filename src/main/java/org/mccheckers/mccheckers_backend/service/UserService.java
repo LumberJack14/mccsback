@@ -18,9 +18,9 @@ import static org.mccheckers.mccheckers_backend.security.BCryptHashing.verifyPas
 public class UserService {
 
     @Inject
-    AdminService adminService;
+    private AdminService adminService;
 
-    public int registerUser(UserRequestDTO userDTO) {
+    public int registerUser(UserRequestDTO userDTO) throws IllegalArgumentException {
         if (isUsernameTaken(userDTO.getUsername())) {
             throw new IllegalArgumentException("Username is already taken.");
         }

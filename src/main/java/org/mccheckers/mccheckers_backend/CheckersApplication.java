@@ -23,6 +23,7 @@ public class CheckersApplication extends Application {
         classes.add(HelloResource.class);
         classes.add(UserResource.class);
         classes.add(RequestResource.class);
+        classes.add(MatchResource.class);
         return classes;
     }
 }

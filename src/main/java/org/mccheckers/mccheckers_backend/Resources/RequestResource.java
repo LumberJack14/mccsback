@@ -18,9 +18,9 @@ import java.util.Collections;
 public class RequestResource {
 
     @Inject
-    RequestService requestService;
+    private RequestService requestService;
     @Inject
-    UserService userService;
+    private UserService userService;
 
     @GET
     @RolesAllowed("USER")

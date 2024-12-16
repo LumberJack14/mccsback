@@ -16,9 +16,9 @@ import java.util.List;
 public class RequestService {
 
     @Inject
-    UserService userService;
+    private UserService userService;
     @Inject
-    AdminService adminService;
+    private AdminService adminService;
 
     public List<RequestResponseDTO> getCurrentRequests() {
         List<Request> requests = RequestDAO.getRequests();
@@ -53,7 +53,7 @@ public class RequestService {
         return RequestDAO.create(dto.getRoomId(), new Timestamp(dto.getDateTime().getTime()), userId);
     }
 
-    public boolean subscribeToRequest(int requestId, String username) {
+    public boolean subscribeToRequest(int requestId, String username) throws IllegalArgumentException {
         Request request = RequestDAO.getById(requestId);
         if (request == null) {
             throw new IllegalArgumentException("Request with id " + requestId + " doesn't exist.");
@@ -73,7 +73,7 @@ public class RequestService {
         return true;
     }
 
-    public boolean unsubscribeFromRequest(int requestId, String username) {
+    public boolean unsubscribeFromRequest(int requestId, String username) throws IllegalArgumentException {
         Request request = RequestDAO.getById(requestId);
         if (request == null) {
             throw new IllegalArgumentException("Request with id " + requestId + " doesn't exist.");
@@ -101,5 +101,29 @@ public class RequestService {
 
 
         return true;
+    }
+
+    public RequestResponseDTO getRequestById(int id) throws IllegalArgumentException {
+        Request request = RequestDAO.getById(id);
+        if (request == null) {
+            throw new IllegalArgumentException("No request found with id " + id);
+        }
+        RequestResponseDTO dto = new RequestResponseDTO();
+        dto.setId(id);
+        dto.setDateTime(request.getDateTime());
+        dto.setRoomId(request.getRoomId());
+        int moderatorId = request.getModeratorId();
+        if (moderatorId != 0) {
+            UserResponseDTO moderator = userService.getUserById(moderatorId);
+            dto.setModerator(moderator);
+        }
+        List<Integer> participantsIds = RequestDAO.getParticipants(request.getId());
+        List<UserResponseDTO> participants = new ArrayList<>();
+        for (Integer i : participantsIds) {
+            participants.add(userService.getUserById(i));
+        }
+        dto.setParticipants(participants);
+
+        return dto;
     }
 }

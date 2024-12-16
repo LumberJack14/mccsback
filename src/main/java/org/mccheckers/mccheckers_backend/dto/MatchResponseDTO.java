@@ -1,21 +1,60 @@
 package org.mccheckers.mccheckers_backend.dto;
 
 public class MatchResponseDTO {
-    int requestId;
+    RequestResponseDTO request;
     boolean isSuccess;
     UserResponseDTO winner;
     UserResponseDTO loser;
-    int scoreId;
-    String scoreText;
+    int winnerScore;
+    int loserScore;
+    String scoreText; // e.g. 2:0
     String remark;
     UserResponseDTO moderator;
 
-    public int getRequestId() {
-        return requestId;
+    public MatchResponseDTO(
+            RequestResponseDTO request,
+            boolean isSuccess,
+            UserResponseDTO winner,
+            UserResponseDTO loser,
+            int winnerScore,
+            int loserScore,
+            String scoreText,
+            String remark,
+            UserResponseDTO moderator
+    ) {
+        this.request = request;
+        this.isSuccess = isSuccess;
+        this.winner = winner;
+        this.loser = loser;
+        this.winnerScore = winnerScore;
+        this.loserScore = loserScore;
+        this.scoreText = scoreText;
+        this.remark = remark;
+        this.moderator = moderator;
     }
 
-    public void setRequestId(int requestId) {
-        this.requestId = requestId;
+    public int getWinnerScore() {
+        return winnerScore;
+    }
+
+    public void setWinnerScore(int winnerScore) {
+        this.winnerScore = winnerScore;
+    }
+
+    public int getLoserScore() {
+        return loserScore;
+    }
+
+    public void setLoserScore(int loserScore) {
+        this.loserScore = loserScore;
+    }
+
+    public RequestResponseDTO getRequest() {
+        return request;
+    }
+
+    public void setRequest(RequestResponseDTO request) {
+        this.request = request;
     }
 
     public boolean isSuccess() {
@@ -42,13 +81,6 @@ public class MatchResponseDTO {
         this.loser = loser;
     }
 
-    public int getScoreId() {
-        return scoreId;
-    }
-
-    public void setScoreId(int scoreId) {
-        this.scoreId = scoreId;
-    }
 
     public String getScoreText() {
         return scoreText;

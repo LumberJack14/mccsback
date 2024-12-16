@@ -4,10 +4,8 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
-import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.dto.UserRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
-import org.mccheckers.mccheckers_backend.model.User;
 import org.mccheckers.mccheckers_backend.service.UserService;
 
 import java.util.Collections;
@@ -29,6 +27,22 @@ public class UserResource {
             int id = userService.registerUser(userDTO);
             return Response.status(Response.Status.CREATED).entity(id).build();
         } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(Collections.singletonMap("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/me")
+    @RolesAllowed("USER")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCurrentUser(@Context SecurityContext securityContext) {
+        try {
+            String username = securityContext.getUserPrincipal().getName();
+            UserResponseDTO dto = userService.getUserById(userService.getIdByUsername(username));
+            return Response.ok(dto).build();
+        } catch (Exception e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity(Collections.singletonMap("error", e.getMessage()))
                     .build();

@@ -2,7 +2,6 @@ package org.mccheckers.mccheckers_backend.db;
 
 import org.mccheckers.mccheckers_backend.Config;
 import org.mccheckers.mccheckers_backend.model.Request;
-import org.mccheckers.mccheckers_backend.model.User;
 
 import java.sql.*;
 import java.util.ArrayList;

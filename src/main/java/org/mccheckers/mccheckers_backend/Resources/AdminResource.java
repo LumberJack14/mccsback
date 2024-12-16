@@ -14,7 +14,7 @@ import java.util.Collections;
 public class AdminResource {
 
     @Inject
-    AdminService adminService;
+    private AdminService adminService;
 
     @GET
     @RolesAllowed("ADMIN")

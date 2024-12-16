@@ -24,9 +24,9 @@ public class AuthResource {
     //TODO logout
 
     @Inject
-    UserService userService;
+    private UserService userService;
     @Inject
-    AdminService adminService;
+    private AdminService adminService;
 
     private static final String secretString = Config.getJwtSecret();
     SecretKey SECRET_KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
