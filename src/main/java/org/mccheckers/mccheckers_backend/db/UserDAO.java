@@ -184,6 +184,29 @@ public class UserDAO {
 
     }
 
+    public static int getMatchesCount(int userId) {
+        String sql = "SELECT count_played_matches(?) as _count";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, userId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt("_count");
+                    return count;
+                } else {
+                    System.out.println("User with id " + userId + " not found.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving matches count for user: " + e.getMessage());
+        }
+
+        return -1;
+
+    }
+
     public static List<UserResponseDTOLeaderboard> getLeaderboard(int limit) {
         String sql = "Select get_top_users_with_details(?)";
         List<UserResponseDTOLeaderboard> users = new ArrayList<>();

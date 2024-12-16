@@ -79,4 +79,12 @@ public class ReportResource {
         return Response.ok(reportService.getReportsUser(userService.getIdByUsername(username))).build();
     }
 
+
+    @GET
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("ADMIN")
+    public Response getAllReports() {
+        return Response.ok(reportService.getAllReports()).build();
+    }
 }

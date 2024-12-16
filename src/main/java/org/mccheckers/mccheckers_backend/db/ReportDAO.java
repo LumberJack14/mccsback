@@ -121,4 +121,25 @@ public class ReportDAO {
         }
         return reports;
     }
+
+    public static List<Report> getAllReports() {
+        String selectSQL = "SELECT id, moderator_id, reason, _user_id FROM report";
+        List<Report> reports = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(selectSQL)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    reports.add(new Report(
+                            resultSet.getInt("id"),
+                            resultSet.getInt("moderator_id"),
+                            resultSet.getInt("_user_id"),
+                            resultSet.getString("reason")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving reports for moderator: " + e.getMessage());
+        }
+        return reports;
+    }
 }
