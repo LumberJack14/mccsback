@@ -47,6 +47,7 @@ public class MatchResource {
     @POST
     @Path("/create")
     @RolesAllowed("MODERATOR")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createMatch(MatchRequestDTO dto) {
         try {

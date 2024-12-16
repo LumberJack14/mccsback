@@ -24,6 +24,7 @@ public class CheckersApplication extends Application {
         classes.add(UserResource.class);
         classes.add(RequestResource.class);
         classes.add(MatchResource.class);
+        classes.add(ReportResource.class);
         return classes;
     }
 }
