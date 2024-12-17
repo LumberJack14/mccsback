@@ -49,6 +49,14 @@ public class MatchResponseDTO {
         }
     }
 
+    public boolean isFriendlyMatch() {
+        return isFriendlyMatch;
+    }
+
+    public void setFriendlyMatch(boolean friendlyMatch) {
+        isFriendlyMatch = friendlyMatch;
+    }
+
     public int getWinnerScore() {
         return winnerScore;
     }

@@ -47,7 +47,6 @@ public class UserService {
         return verifyPassword(password, user.getPasswordHash());
     }
 
-    // Check if email already exists in the database
     public boolean isUsernameTaken(String username) {
         Optional<User> user = Optional.ofNullable(UserDAO.findByUsername(username));
         return user.isPresent();

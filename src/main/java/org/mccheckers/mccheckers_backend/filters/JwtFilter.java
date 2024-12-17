@@ -41,7 +41,7 @@ public class JwtFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String path = requestContext.getUriInfo().getPath();
-        if (path.equals("/auth/login")) {
+        if (path.equals("/auth/login") || path.equals("/users/register")) {
             return;
         }
 
@@ -67,45 +67,56 @@ public class JwtFilter implements ContainerRequestFilter {
 
             int userId = userService.getIdByUsername(jws.getPayload().getSubject());
             List<Block> blocks = BlockDAO.getBlocksUser(userId);
-            for (Block block: blocks) {
+            for (Block block : blocks) {
                 if (block.getEndDate().after(new Date())) {
                     requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
                             .entity("The user has been blocked with the reason: " + block.getCause()).build());
                 }
             }
 
-            SecurityContext securityContext = new SecurityContext() {
-                @Context
-                private HttpServletRequest request;
-                @Override
-                public Principal getUserPrincipal() {
-                    return () -> jws.getPayload().getSubject();
-                }
-
-                @Override
-                public boolean isUserInRole(String role) {
-                    List<String> roles = (List<String>) jws.getPayload().get("roles");
-                    return roles.contains(role);
-                }
-
-                @Override
-                public boolean isSecure() {
-                    return requestContext.getSecurityContext().isSecure();
-                }
-
-                @Override
-                public String getAuthenticationScheme() {
-                    return "Bearer";
-                }
-            };
-
+            SecurityContext securityContext = new CustomSecurityContext(jws, requestContext);
             requestContext.setSecurityContext(securityContext);
 
-
-            //TODO add check for the expiration date
 
         } catch (JwtException e) {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
         }
     }
+
+    public class CustomSecurityContext implements SecurityContext {
+
+        private List<String> roles;
+        private String subject;
+        private ContainerRequestContext initialRequestContext;
+
+        public CustomSecurityContext(Jws<Claims> jws, ContainerRequestContext initialRequestContext) {
+            this.roles = ( List<String>) jws.getPayload().get("roles");
+            this.subject = jws.getPayload().getSubject();
+            this.initialRequestContext = initialRequestContext;
+        }
+
+        @Context
+        private HttpServletRequest request;
+
+        @Override
+        public Principal getUserPrincipal() {
+            return () -> this.subject;
+        }
+
+        @Override
+        public boolean isUserInRole(String role) {
+            return this.roles.contains(role);
+        }
+
+        @Override
+        public boolean isSecure() {
+            return initialRequestContext.getSecurityContext().isSecure();
+        }
+
+        @Override
+        public String getAuthenticationScheme() {
+            return "Bearer";
+        }
+    }
 }
+

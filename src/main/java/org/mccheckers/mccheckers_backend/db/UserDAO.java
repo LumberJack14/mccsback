@@ -161,7 +161,7 @@ public class UserDAO {
     }
 
     public static String getUserRank(int userId) {
-        String sql = "SELECT get_user_rank(?)";
+        String sql = "SELECT get_user_rank(?) AS name";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

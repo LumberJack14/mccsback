@@ -3,14 +3,17 @@ package org.mccheckers.mccheckers_backend.Resources;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.mccheckers.mccheckers_backend.Config;
 import org.mccheckers.mccheckers_backend.service.AdminService;
+import org.mccheckers.mccheckers_backend.service.AuthService;
 import org.mccheckers.mccheckers_backend.service.UserService;
 
 import javax.crypto.SecretKey;
@@ -21,10 +24,14 @@ import java.util.*;
 public class AuthResource {
     private static Set<String> tokenBlacklist = new HashSet<>();
 
+    @Inject
+    private AuthService authService;
+
     @POST
     @Path("/logout")
-    public Response logout(@Context ContainerRequestContext requestContext) {
-        String authHeader = requestContext.getHeaderString("Authorization");
+    public Response logout(@Context HttpHeaders headers) {
+        String authHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid Authorization header").build();
@@ -56,39 +63,12 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(User user) {
-        String username = user.getUsername();
-        String password = user.getPassword();
-        if (username.equals(Config.getAdminUsername()) && password.equals(Config.getAdminPassword())) {
-            String token = Jwts.builder()
-                    .subject(user.getUsername())
-                    .claim("roles", Arrays.asList("ADMIN", "USER", "MODERATOR")) //todo verify the necessity of MOD role
-                    .issuedAt(new Date())
-                    .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                    .signWith(SECRET_KEY)
-                    .compact();
-
-            return Response.ok(new TokenResponse(token)).build();
-        }
-        if (!userService.comparePasswords(username, password)) {
+        String token = authService.login(user.username, user.password);
+        if (token == null) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("Unauthorized access")
                     .build();
         }
-
-        List<String> roles = new ArrayList<>();
-        roles.add("USER");
-        if (adminService.isModerator(userService.getIdByUsername(username))) {
-            roles.add("MODERATOR");
-        }
-
-        String token = Jwts.builder()
-                .subject(username)
-                .claim("roles", roles)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SECRET_KEY)
-                .compact();
-
         return Response.ok(new TokenResponse(token)).build();
 
     }

@@ -27,6 +27,14 @@ public class UserResponseDTO {
         this.rank = UserDAO.getUserRank(id);
     }
 
+    public String getRank() {
+        return rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
+    }
+
     public boolean isModerator() {
         return isModerator;
     }

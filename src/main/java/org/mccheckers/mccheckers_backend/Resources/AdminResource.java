@@ -3,8 +3,10 @@ package org.mccheckers.mccheckers_backend.Resources;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import org.mccheckers.mccheckers_backend.dto.BlockRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.ModeratorRequestDTO;
 import org.mccheckers.mccheckers_backend.service.AdminService;
@@ -19,7 +21,10 @@ public class AdminResource {
 
     @GET
     @RolesAllowed("ADMIN")
-    public Response getAdminData() {
+    public Response getAdminData(@Context SecurityContext securityContext) {
+        if (!securityContext.isUserInRole("ADMIN"))  {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         return Response.ok("Welcome, Admin!").build();
     }
 
@@ -58,6 +63,7 @@ public class AdminResource {
     @POST
     @Path("/activate/{id}")
     @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response activateUser(@PathParam("id") int userId) {
         try {
             adminService.activateUser(userId);

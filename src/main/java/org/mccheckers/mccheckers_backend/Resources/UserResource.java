@@ -1,31 +1,39 @@
 package org.mccheckers.mccheckers_backend.Resources;
 
+import io.jsonwebtoken.Jwts;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import org.mccheckers.mccheckers_backend.dto.UserRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
+import org.mccheckers.mccheckers_backend.service.AuthService;
 import org.mccheckers.mccheckers_backend.service.UserService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Path("/users")
 public class UserResource {
 
     @Inject
     private UserService userService;
+    @Inject
+    private AuthService authService;
 
     // Endpoint to create a new user
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("ADMIN")
+    //@RolesAllowed("ADMIN")
     public Response createUser(UserRequestDTO userDTO) {
         try {
             int id = userService.registerUser(userDTO);
-            return Response.status(Response.Status.CREATED).entity(id).build();
+            String token = authService.login(userDTO.getUsername(), userDTO.getPassword());
+            return Response.status(Response.Status.CREATED).entity(new AuthResource.TokenResponse(token)).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity(Collections.singletonMap("error", e.getMessage()))
@@ -120,5 +128,21 @@ public class UserResource {
         }
 
         return Response.ok(userService.getLeaderboard(limit)).build();
+    }
+
+    public static class TokenResponse {
+        private String token;
+
+        public TokenResponse(String token) {
+            this.token = token;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
     }
 }
