@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.SecurityContext;
 import org.mccheckers.mccheckers_backend.dto.BlockRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.ModeratorRequestDTO;
 import org.mccheckers.mccheckers_backend.service.AdminService;
+import org.mccheckers.mccheckers_backend.service.UserService;
 
 import java.util.Collections;
 
@@ -18,6 +19,8 @@ public class AdminResource {
 
     @Inject
     private AdminService adminService;
+    @Inject
+    private UserService userService;
 
     @GET
     @RolesAllowed("ADMIN")
@@ -29,14 +32,14 @@ public class AdminResource {
     }
 
     @POST
-    @Path("/moderator")
+    @Path("/moderator/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("ADMIN")
-    public Response addModerator(ModeratorRequestDTO dto) {
+    public Response addModerator(@PathParam("id") int id) {
         try {
-            int id = adminService.addModerator(dto.getUserId());
-            return Response.status(Response.Status.CREATED).entity(id).build();
+            int modId = adminService.addModerator(id);
+            return Response.status(Response.Status.CREATED).entity(modId).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity(Collections.singletonMap("error", e.getMessage()))
@@ -78,6 +81,7 @@ public class AdminResource {
     @POST
     @Path("/deactivate/{id}")
     @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deactivateUser(@PathParam("id") int userId) {
         try {
             adminService.deactivateUser(userId);
@@ -97,6 +101,27 @@ public class AdminResource {
             adminService.blockUser(dto);
             return Response.ok().build();
         } catch(Exception e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(Collections.singletonMap("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    /*@GET
+    @Path("/block/{id}")
+    @RolesAllowed("ADMIN")
+    public Response checkBlocked(@PathParam("id") int userId) {
+
+    }*/
+
+    @GET
+    @Path("/get-inactive-users")
+    @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getInactiveUsers() {
+        try {
+            return Response.ok(userService.getInactiveUsers()).build();
+        }catch (Exception e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity(Collections.singletonMap("error", e.getMessage()))
                     .build();

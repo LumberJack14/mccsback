@@ -1,9 +1,11 @@
 package org.mccheckers.mccheckers_backend.dto;
 
 import jakarta.inject.Inject;
+import org.mccheckers.mccheckers_backend.db.ModeratorDAO;
 import org.mccheckers.mccheckers_backend.service.AdminService;
 
 public class MatchResponseDTO {
+    private int id;
     private RequestResponseDTO request;
     private boolean isSuccess;
     private UserResponseDTO winner;
@@ -22,6 +24,7 @@ public class MatchResponseDTO {
     }
 
     public MatchResponseDTO(
+            int id,
             RequestResponseDTO request,
             boolean isSuccess,
             UserResponseDTO winner,
@@ -32,6 +35,7 @@ public class MatchResponseDTO {
             String remark,
             UserResponseDTO moderator
     ) {
+        this.id = id;
         this.request = request;
         this.isSuccess = isSuccess;
         this.winner = winner;
@@ -42,11 +46,19 @@ public class MatchResponseDTO {
         this.remark = remark;
         this.moderator = moderator;
 
-        if (adminService.isModerator(loser.getId()) || adminService.isModerator(winner.getId())) {
+        if (ModeratorDAO.isModerator(loser.getId()) || ModeratorDAO.isModerator(winner.getId())) {
             this.isFriendlyMatch = true;
         } else {
             this.isFriendlyMatch = false;
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public boolean isFriendlyMatch() {

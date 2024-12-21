@@ -49,14 +49,6 @@ public class AuthResource {
         return tokenBlacklist.contains(token);
     }
 
-    @Inject
-    private UserService userService;
-    @Inject
-    private AdminService adminService;
-
-    private static final String secretString = Config.getJwtSecret();
-    SecretKey SECRET_KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
-    private static final long EXPIRATION_TIME = Long.parseLong(Config.getJwtExpirationTime());
 
     @POST
     @Path("/login")

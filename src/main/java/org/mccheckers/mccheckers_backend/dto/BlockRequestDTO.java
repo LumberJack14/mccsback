@@ -13,6 +13,10 @@ public class BlockRequestDTO {
         this.cause = cause;
     }
 
+    public BlockRequestDTO() {
+
+    }
+
     public int getUserId() {
         return userId;
     }

@@ -2,7 +2,7 @@ package org.mccheckers.mccheckers_backend.dto;
 
 public class ReportRequestDTO {
     private int moderatorId;
-    private int UserId;
+    private int userId;
     private String reason;
 
     public int getModeratorId() {
@@ -14,11 +14,11 @@ public class ReportRequestDTO {
     }
 
     public int getUserId() {
-        return UserId;
+        return userId;
     }
 
     public void setUserId(int userId) {
-        UserId = userId;
+        this.userId = userId;
     }
 
     public String getReason() {

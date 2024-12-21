@@ -1,6 +1,7 @@
 package org.mccheckers.mccheckers_backend.db;
 
 import org.mccheckers.mccheckers_backend.Config;
+import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
 import org.mccheckers.mccheckers_backend.dto.UserResponseDTOLeaderboard;
 import org.mccheckers.mccheckers_backend.model.User;
 
@@ -184,6 +185,35 @@ public class UserDAO {
 
     }
 
+    public static List<User> getInactiveUsers() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT id, username, elo, pass_hash, personal_data_id, active FROM _user WHERE active = ?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setBoolean(1, false);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    User user = new User();
+                    user.setId(resultSet.getInt("id"));
+                    user.setUsername(resultSet.getString("username"));
+                    user.setElo(resultSet.getInt("elo"));
+                    user.setPasswordHash(resultSet.getString("pass_hash"));
+                    user.setActive(resultSet.getBoolean("active"));
+                    users.add(user);
+                } else {
+                    System.out.println("no inactive users found.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving inactive users: " + e.getMessage());
+        }
+
+        return users;
+    }
+
     public static int getMatchesCount(int userId) {
         String sql = "SELECT count_played_matches(?) as _count";
 
@@ -208,7 +238,7 @@ public class UserDAO {
     }
 
     public static List<UserResponseDTOLeaderboard> getLeaderboard(int limit) {
-        String sql = "Select get_top_users_with_details(?)";
+        String sql = "SELECT * FROM get_top_users_with_details(?)";
         List<UserResponseDTOLeaderboard> users = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

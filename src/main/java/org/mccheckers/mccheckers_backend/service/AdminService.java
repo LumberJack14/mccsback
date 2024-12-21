@@ -5,7 +5,12 @@ import org.mccheckers.mccheckers_backend.db.BlockDAO;
 import org.mccheckers.mccheckers_backend.db.ModeratorDAO;
 import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.dto.BlockRequestDTO;
+import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
+import org.mccheckers.mccheckers_backend.model.Block;
 import org.mccheckers.mccheckers_backend.model.User;
+
+import java.util.Date;
+import java.util.List;
 
 @RequestScoped
 public class AdminService {
@@ -69,5 +74,27 @@ public class AdminService {
             throw new Exception("Server error while creating a block for user");
         }
         return true;
+    }
+
+    public boolean userIsBlocked(int userId) {
+        List<Block> blocks = BlockDAO.getBlocksUser(userId);
+        for (Block block: blocks) {
+            if (block.getEndDate().after(new Date())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public UserResponseDTO getMe() {
+        return new UserResponseDTO(0,
+                "Admin",
+                100,
+                true,
+                "Admin",
+                "Admin",
+                "",
+                "https://superbrainybeans.com/history/wp-content/uploads/2024/01/guy-fawkes-mobile.jpg",
+                true);
     }
 }

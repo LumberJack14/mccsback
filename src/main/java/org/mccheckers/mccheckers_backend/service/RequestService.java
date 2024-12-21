@@ -21,7 +21,7 @@ public class RequestService {
     private AdminService adminService;
 
     public List<RequestResponseDTO> getCurrentRequests() {
-        List<Request> requests = RequestDAO.getRequests();
+        List<Request> requests = RequestDAO.getPendingRequests();
         return requestsToDTOs(requests);
     }
 
@@ -38,11 +38,15 @@ public class RequestService {
             throw new IllegalArgumentException("Request with id " + requestId + " doesn't exist.");
         };
 
-        if (RequestDAO.getParticipants(requestId).size() >= 2) {
+        List<Integer> participantIds =  RequestDAO.getParticipants(requestId);
+
+        if (participantIds.size() >= 2) {
             throw new IllegalArgumentException("Request with id " + requestId + " is full.");
         }
-
         int userId = userService.getIdByUsername(username);
+        if (participantIds.contains(userId)) {
+            throw new IllegalArgumentException("User already subscribed");
+        }
 
         if (adminService.isModerator(userId)) {
             RequestDAO.updateModerator(requestId, userId);

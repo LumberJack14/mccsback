@@ -15,7 +15,7 @@ public class ReportDAO {
 
     public static Report createReport(int moderatorId, String reason, int userId) {
         String insertUserSQL = "INSERT INTO report (moderator_id, reason, _user_id) VALUES (?, ?, ?)";
-
+        System.out.println("userId:" + userId);
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(insertUserSQL, Statement.RETURN_GENERATED_KEYS)) {

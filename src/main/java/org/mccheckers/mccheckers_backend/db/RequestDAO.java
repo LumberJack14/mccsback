@@ -199,6 +199,51 @@ public class RequestDAO {
         return requests;
     }
 
+    public static boolean updateDone(int id) {
+        String sql = "UPDATE request SET done = ? WHERE id = ?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setBoolean(1, true);
+            preparedStatement.setInt(2, id);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("request is done with id " + id);
+                return true;
+            } else {
+                System.out.println("No request found with id " + id + " to update.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while updating request done: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public static List<Request> getPendingRequests() {
+        List<Request> requests = new ArrayList<>();
+        String sql = "SELECT * FROM request WHERE done = false";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                int requestId = resultSet.getInt("id");
+                int roomId = resultSet.getInt("room_id");
+                Timestamp timestamp = resultSet.getTimestamp("date_time");
+                int moderatorId = resultSet.getInt("moderator_id");
+                requests.add(new Request(requestId, roomId, new Date(timestamp.getTime()), moderatorId));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving done requests: " + e.getMessage());
+        }
+
+        return requests;
+    }
+
 
     public static Request getById(int id) {
         String sql = "SELECT id, room_id, date_time, moderator_id FROM request WHERE id = ?";

@@ -2,6 +2,7 @@ package org.mccheckers.mccheckers_backend.service;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import org.mccheckers.mccheckers_backend.db.ModeratorDAO;
 import org.mccheckers.mccheckers_backend.db.PersonalDataDAO;
 import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.dto.UserRequestDTO;
@@ -67,7 +68,7 @@ public class UserService {
                     personalDataInstance.getSurname(),
                     personalDataInstance.getPhoneNumber(),
                     personalDataInstance.getAvatarLink(),
-                    adminService.isModerator(userInstance.getId())
+                    ModeratorDAO.isModerator(id)
                     );
         }
         return null;
@@ -121,7 +122,7 @@ public class UserService {
                     personalDataToUpdate.getSurname(),
                     personalDataToUpdate.getPhoneNumber(),
                     personalDataToUpdate.getAvatarLink(),
-                    adminService.isModerator(userToUpdate.getId())
+                    ModeratorDAO.isModerator(userToUpdate.getId())
             );
         }
 
@@ -154,7 +155,7 @@ public class UserService {
                     pd.getSurname(),
                     pd.getPhoneNumber(),
                     pd.getAvatarLink(),
-                    adminService.isModerator(user.getId())
+                    ModeratorDAO.isModerator(user.getId())
             );
             userResponseDTOS.add(dto);
         }
@@ -163,6 +164,26 @@ public class UserService {
 
     public List<UserResponseDTOLeaderboard> getLeaderboard(int limit) {
         return UserDAO.getLeaderboard(limit);
+    }
+
+    public List<UserResponseDTO> getInactiveUsers() {
+        List<User> users = UserDAO.getInactiveUsers();
+        List<UserResponseDTO> dtos = new ArrayList<>();
+        for (User user: users) {
+            PersonalData pd = PersonalDataDAO.getPersonalDataById(user.getId());
+            dtos.add(new UserResponseDTO(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getElo(),
+                    user.isActive(),
+                    pd.getName(),
+                    pd.getSurname(),
+                    pd.getPhoneNumber(),
+                    pd.getAvatarLink(),
+                    ModeratorDAO.isModerator(user.getId())
+                    ));
+        }
+            return dtos;
     }
 }
 

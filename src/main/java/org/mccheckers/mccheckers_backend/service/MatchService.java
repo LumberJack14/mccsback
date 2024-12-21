@@ -3,6 +3,7 @@ package org.mccheckers.mccheckers_backend.service;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import org.mccheckers.mccheckers_backend.db.MatchDAO;
+import org.mccheckers.mccheckers_backend.db.RequestDAO;
 import org.mccheckers.mccheckers_backend.db.UserDAO;
 import org.mccheckers.mccheckers_backend.dto.MatchRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.MatchResponseDTO;
@@ -47,7 +48,11 @@ public class MatchService {
             UserDAO.updateElo(loser.getId(), newElo[1]);
         }
 
+        RequestDAO.updateDone(match.getRequestId());
+
+
         MatchResponseDTO matchResponseDTO = new MatchResponseDTO(
+                match.getId(),
                 requestService.getRequestById(match.getRequestId()),
                 match.isSuccess(),
                 userService.getUserById(match.getWinnerId()),
@@ -68,6 +73,7 @@ public class MatchService {
             throw new IllegalArgumentException("No match found with id " + id);
         }
         return new MatchResponseDTO(
+                match.getId(),
                 requestService.getRequestById(match.getRequestId()),
                 match.isSuccess(),
                 userService.getUserById(match.getWinnerId()),
@@ -86,6 +92,7 @@ public class MatchService {
 
         for (Match match: matches) {
             MatchResponseDTO matchResponseDTO = new MatchResponseDTO(
+                    match.getId(),
                     requestService.getRequestById(match.getRequestId()),
                     match.isSuccess(),
                     userService.getUserById(match.getWinnerId()),
@@ -107,6 +114,7 @@ public class MatchService {
         List<MatchResponseDTO> matchResponseDTOS = new ArrayList<>();
         for (Match match: matches) {
             MatchResponseDTO matchResponseDTO = new MatchResponseDTO(
+                    match.getId(),
                     requestService.getRequestById(match.getRequestId()),
                     match.isSuccess(),
                     userService.getUserById(match.getWinnerId()),

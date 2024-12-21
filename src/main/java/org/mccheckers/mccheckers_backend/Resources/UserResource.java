@@ -7,8 +7,10 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import org.mccheckers.mccheckers_backend.dto.UserRequestDTO;
 import org.mccheckers.mccheckers_backend.dto.UserResponseDTO;
+import org.mccheckers.mccheckers_backend.service.AdminService;
 import org.mccheckers.mccheckers_backend.service.AuthService;
 import org.mccheckers.mccheckers_backend.service.UserService;
+import org.mccheckers.mccheckers_backend.Config;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,8 @@ public class UserResource {
     private UserService userService;
     @Inject
     private AuthService authService;
+    @Inject
+    private AdminService adminService;
 
     // Endpoint to create a new user
     @POST
@@ -48,6 +52,10 @@ public class UserResource {
     public Response getCurrentUser(@Context SecurityContext securityContext) {
         try {
             String username = securityContext.getUserPrincipal().getName();
+            if (username.equals(Config.getAdminUsername())) {
+                return Response.ok(adminService.getMe()).build();
+            }
+
             UserResponseDTO dto = userService.getUserById(userService.getIdByUsername(username));
             return Response.ok(dto).build();
         } catch (Exception e) {
