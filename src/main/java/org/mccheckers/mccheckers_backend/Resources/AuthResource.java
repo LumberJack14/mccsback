@@ -55,14 +55,17 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(User user) {
-        String token = authService.login(user.username, user.password);
-        if (token == null) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("Unauthorized access")
-                    .build();
+        try {
+            String token = authService.login(user.username, user.password);
+            if (token == null) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("Unauthorized access")
+                        .build();
+            }
+            return Response.ok(new TokenResponse(token)).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(new TokenResponse(token)).build();
-
     }
 
     public static class User {

@@ -38,21 +38,27 @@ public class RequestService {
             throw new IllegalArgumentException("Request with id " + requestId + " doesn't exist.");
         };
 
+        int userId = userService.getIdByUsername(username);
+        if (!userService.getUserById(userId).isActive()) {
+            throw new IllegalArgumentException("Inactive players cannot join requests!");
+        }
+
         List<Integer> participantIds =  RequestDAO.getParticipants(requestId);
 
         if (participantIds.size() >= 2) {
             throw new IllegalArgumentException("Request with id " + requestId + " is full.");
         }
-        int userId = userService.getIdByUsername(username);
         if (participantIds.contains(userId)) {
             throw new IllegalArgumentException("User already subscribed");
         }
 
-        if (adminService.isModerator(userId)) {
+        if (request.getModeratorId() == 0 && adminService.isModerator(userId)) {
             RequestDAO.updateModerator(requestId, userId);
-        } else {
-            RequestDAO.addParticipant(requestId, userId);
+            return true;
         }
+
+        RequestDAO.addParticipant(requestId, userId);
+
         return true;
     }
 
@@ -70,6 +76,11 @@ public class RequestService {
 
         if (adminService.isModerator(userId)) {
             if (participants.isEmpty()) {
+                RequestDAO.remove(requestId);
+                return true;
+            }
+
+            if (participants.size() <= 1 && participants.contains(userId)) {
                 RequestDAO.remove(requestId);
                 return true;
             }
